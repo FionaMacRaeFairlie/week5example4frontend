@@ -1,25 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState, useCallback } from "react";
+import "./App.css";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+  const [status, setStatus] = useState("idle");
+  const [data, setData] = useState([]);
 
+  const fetchData = useCallback(() => {
+    const url = "http://localhost:3001/food";
+    fetch(url)
+      .then((response) => response.json())
+      .then((incomingData) => {
+        console.log(incomingData);
+        setData(incomingData);
+        setStatus("fetched");
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  if (status === "fetched")
+    return (
+      <div>
+        {data.map((food) => {
+          return <p>{food.name}</p>;
+        })}
+      </div>
+    );
+}
 export default App;
